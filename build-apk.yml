@@ -1,0 +1,49 @@
+name: Gerar APK (beats TV)
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Organizar arquivos soltos nas pastas
+        run: bash organizar.sh
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+
+      - name: Baixar bibliotecas (supabase-js + fonte Inter)
+        run: bash scripts/baixar-libs.sh
+
+      - name: Compilar APK
+        run: gradle assembleRelease --no-daemon --stacktrace
+
+      - name: Renomear APK
+        run: cp app/build/outputs/apk/release/app-release.apk beats-tv.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: beats-tv-apk
+          path: beats-tv.apk
+
+      - name: Publicar em Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: beats TV build ${{ github.run_number }}
+          files: beats-tv.apk
+          make_latest: true
