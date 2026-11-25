@@ -5,11 +5,26 @@ const A=(fn,keep)=>{const k=(keep?'p':'a')+(++actN);ACT[k]=fn;return `data-a="${
 const resetActs=()=>{for(const k in ACT)if(k[0]==='a')delete ACT[k]};
 document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(t&&ACT[t.dataset.a]){e.preventDefault();ACT[t.dataset.a](t)}});
 
+/* Tamanho REAL visível da tela, em px CSS. No WebView da TV o innerWidth pode vir "alargado" até 1920
+   (o WebView aumenta a janela para caber o palco), o que dava K=1 e um zoom enorme. Por isso usamos o
+   menor valor entre as fontes disponíveis. */
+function vp(){
+  const vv=window.visualViewport,de=document.documentElement;
+  const w=[window.innerWidth,de.clientWidth,vv&&vv.width].filter(v=>v>0);
+  const h=[window.innerHeight,de.clientHeight,vv&&vv.height].filter(v=>v>0);
+  return [w.length?Math.min(...w):1920,h.length?Math.min(...h):1080];
+}
 function fit(){
-  K=Math.min(innerWidth/1920,innerHeight/1080);
-  const s=$('#stage');s.style.transform=`translate(${(innerWidth-1920*K)/2}px,${(innerHeight-1080*K)/2}px) scale(${K})`;
+  const [W,H]=vp();
+  K=Math.min(W/1920,H/1080);
+  const s=$('#stage');s.style.transform=`translate(${(W-1920*K)/2}px,${(H-1080*K)/2}px) scale(${K})`;
 }
 addEventListener('resize',fit);
+addEventListener('orientationchange',fit);
+addEventListener('load',fit);
+if(window.visualViewport)visualViewport.addEventListener('resize',fit);
+/* o WebView às vezes ajusta o tamanho da janela depois de carregar: reconfere algumas vezes */
+[250,800,2000].forEach(t=>setTimeout(fit,t));
 
 let tT=0;
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('on'),2200)}
