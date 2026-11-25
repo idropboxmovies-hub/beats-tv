@@ -40,8 +40,14 @@ class MainActivity : Activity() {
             mediaPlaybackRequiresUserGesture = false
             allowFileAccess = false
             allowContentAccess = false
-            useWideViewPort = true
-            loadWithOverviewMode = true
+            // A interface faz a própria escala (palco 1920×1080 em js/nav.js), então o WebView
+            // não pode "ajudar": sem viewport largo, sem modo panorama, sem zoom e sem fonte ampliada.
+            useWideViewPort = false
+            loadWithOverviewMode = false
+            setSupportZoom(false)
+            builtInZoomControls = false
+            displayZoomControls = false
+            textZoom = 100
         }
 
         web.webViewClient = object : WebViewClient() {
