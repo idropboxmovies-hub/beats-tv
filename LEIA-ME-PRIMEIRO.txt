@@ -1,5 +1,0 @@
-1) Apague os arquivos soltos que já estão no repositório (ou só envie estes por cima).
-2) Envie TODOS estes arquivos para a RAIZ do repositório (sem pastas).
-3) No GitHub: Add file > Create new file. No nome digite:  .github/workflows/build-apk.yml
-   (ao digitar a barra "/" o GitHub cria as pastas sozinho). Cole o conteúdo de build-apk.yml e dê Commit.
-4) Aba Actions > Gerar APK > Run workflow. O APK sai em Artifacts / Releases.
